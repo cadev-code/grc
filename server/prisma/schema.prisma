@@ -1,4 +1,86 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+model User {
+  id             Int               @id @default(autoincrement())
+  fullname       String
+  username       String            @unique
+  passwordHash   String
+  incidentsOwned Incident[]        @relation("OwnerTreatment")
+  comments       IncidentComment[]
+}
+
+model Site {
+  id        Int        @id @default(autoincrement())
+  site      String     @unique
+  incidents Incident[]
+}
+
+model Area {
+  id        Int        @id @default(autoincrement())
+  area      String     @unique
+  incidents Incident[]
+}
+
+model Incident {
+  id                Int               @id
+  detectionDateTime DateTime
+  affectedType      String
+  eventOrigin       String
+  description       String            @db.Text
+  type              String
+  category          String
+  severity          String
+  natureImpact      String
+  rootCause         String            @db.Text
+  containment       String            @db.Text
+  eradication       String            @db.Text
+  recoveryMeasures  String            @db.Text
+  preventiveActions String            @db.Text
+  closingDateTime   DateTime?
+  reporterBy        String
+  state             String
+  // relations
+  siteId            Int
+  site              Site              @relation(fields: [siteId], references: [id])
+  areaId            Int
+  area              Area              @relation(fields: [areaId], references: [id])
+  ownerTreatmentId  Int
+  ownerTreatment    User              @relation("OwnerTreatment", fields: [ownerTreatmentId], references: [id])
+  comments          IncidentComment[]
+  files             IncidentFile[]
+}
+
+model IncidentComment {
+  id         Int      @id @default(autoincrement())
+  comment    String   @db.Text
+  createdAt  DateTime @default(now())
+  // relations
+  incidentId Int
+  incident   Incident @relation(fields: [incidentId], references: [id])
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id])
+}
+
+model File {
+  id        Int            @id @default(autoincrement())
+  filename  String
+  pathname  String         @unique
+  extension String
+  incidents IncidentFile[]
+}
+
+model IncidentFile {
+  id         Int      @id @default(autoincrement())
+  // relations
+  incidentId Int
+  incident   Incident @relation(fields: [incidentId], references: [id])
+  fileId     Int
+  file       File     @relation(fields: [fileId], references: [id])
 }

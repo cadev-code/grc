@@ -1,16 +1,16 @@
 services:
   db:
     build: ./db
-    image: db
-    container_name: db
+    image: grc_db
+    container_name: grc_db
     ports:
       - 3306:3306
     networks:
       - app_network
   server:
     build: ./server
-    image: server
-    container_name: server
+    image: grc_server
+    container_name: grc_server
     ports:
       - 8080:8080
     volumes:
@@ -22,8 +22,8 @@ services:
       - app_network
   client:
     build: ./client
-    image: client
-    container_name: client
+    image: grc_client
+    container_name: grc_client
     ports:
       - 5173:5173
     volumes:
