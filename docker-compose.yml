@@ -1,0 +1,39 @@
+services:
+  db:
+    build: ./db
+    image: db
+    container_name: db
+    ports:
+      - 3306:3306
+    networks:
+      - app_network
+  server:
+    build: ./server
+    image: server
+    container_name: server
+    ports:
+      - 8080:8080
+    volumes:
+      - ./server:/app
+      - /app/node_modules
+    depends_on:
+      - db
+    networks:
+      - app_network
+  client:
+    build: ./client
+    image: client
+    container_name: client
+    ports:
+      - 5173:5173
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+    depends_on:
+      - server
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
