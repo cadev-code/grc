@@ -1,4 +1,3 @@
-import e from 'cors';
 import { Router } from 'express';
 import { validateInput } from '../middlewares';
 import { createUser } from '../controllers';
