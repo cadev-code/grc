@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
 import prisma from '../prisma_client';
-import { encryptPassword } from '../helpers';
+import { encryptPassword, logger } from '../helpers';
 import { CreateUserBody } from '../schemas';
+import { AppError } from '../utils';
 
 export const createUser = async (
   req: Request<object, object, CreateUserBody>,
@@ -9,28 +10,31 @@ export const createUser = async (
 ) => {
   const { fullname, username, password } = req.body;
 
-  try {
-    const existingUser = await prisma.user.findUnique({
-      where: { username },
-    });
+  const existingUser = await prisma.user.findUnique({
+    where: { username },
+  });
 
-    if (existingUser) {
-      res.status(400).json({ error: 'El nombre de usuario ya existe.' });
-      return;
-    }
-
-    const passwordHash = await encryptPassword(password);
-
-    await prisma.user.create({
-      data: {
-        fullname,
-        username,
-        passwordHash,
-      },
-    });
-
-    res.status(201).json({ message: 'Usuario creado exitosamente.' });
-  } catch (error) {
-    res.status(500).json({ error: 'Error del servidor.' });
+  if (existingUser) {
+    throw new AppError(
+      'Nombre de usuario ya existe',
+      400,
+      'USER_ALREADY_EXISTS',
+      `Intento de creación de usuario fallido - El nombre de usuario '${username}' ya existe`,
+    );
   }
+
+  const passwordHash = await encryptPassword(password);
+
+  await prisma.user.create({
+    data: {
+      fullname,
+      username,
+      passwordHash,
+    },
+  });
+
+  logger.info(
+    `Usuario creado exitosamente - Fullname: ${fullname}, Username: ${username}`,
+  );
+  res.status(201).json({ message: 'Usuario creado exitosamente' });
 };
