@@ -1,8 +1,12 @@
 import { Request, Response } from 'express';
 import prisma from '../prisma_client';
 import { encryptPassword } from '../helpers';
+import { CreateUserBody } from '../schemas';
 
-export const createUser = async (req: Request, res: Response) => {
+export const createUser = async (
+  req: Request<object, object, CreateUserBody>,
+  res: Response,
+) => {
   const { fullname, username, password } = req.body;
 
   try {
