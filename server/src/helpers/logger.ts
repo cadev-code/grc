@@ -33,10 +33,8 @@ const transports =
         }),
       ];
 
-const logger = winston.createLogger({
+export const logger = winston.createLogger({
   level: 'info',
   format: combine(timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }), logFormat),
   transports,
 });
-
-export default logger;
