@@ -1,8 +1,10 @@
 import { Request, Response } from 'express';
 import prisma from '../prisma_client';
 import { encryptPassword, logger } from '../helpers';
-import { CreateUserBody } from '../schemas';
+import { CreateUserBody, LoginBody } from '../schemas';
 import { AppError } from '../utils';
+import { compareEncryptedPassword } from '../helpers/compareEncryptedPassword';
+import jwt from 'jsonwebtoken';
 
 export const createUser = async (
   req: Request<object, object, CreateUserBody>,
@@ -37,4 +39,64 @@ export const createUser = async (
     `Usuario creado exitosamente - Fullname: ${fullname}, Username: ${username}`,
   );
   res.status(201).json({ message: 'Usuario creado exitosamente' });
+};
+
+export const login = async (
+  req: Request<object, object, LoginBody>,
+  res: Response,
+) => {
+  const { username, password } = req.body;
+
+  const user = await prisma.user.findUnique({
+    where: {
+      username,
+    },
+  });
+
+  if (!user) {
+    throw new AppError(
+      'El nombre de usuario no existe',
+      404,
+      'USER_NOT_FOUND',
+      `Intento de autenticación fallido - El nombre de usuario '${username}' no existe`,
+    );
+  }
+
+  const isPasswordValid = await compareEncryptedPassword(
+    password,
+    user.passwordHash,
+  );
+
+  if (!isPasswordValid) {
+    throw new AppError(
+      'La contraseña es incorrecta',
+      401,
+      'INVALID_CREDENTIALS',
+      `Intento de autenticación fallido - Contraseña incorrecta para el usuario '${username}'`,
+    );
+  }
+
+  const token = jwt.sign(
+    {
+      id: user.id,
+      username: user.username,
+    },
+    process.env.JWT_SECRET || 'default_secret',
+    {
+      expiresIn: '1h',
+    },
+  );
+
+  logger.info(`Usuario autenticado exitosamente - User: ${username}`);
+
+  res
+    .cookie('access_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 1000 * 60 * 60, // 1 hour
+    })
+    .json({
+      fullname: user.fullname,
+      username: user.username,
+    });
 };

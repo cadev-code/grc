@@ -20,3 +20,10 @@ export const createUserSchema = z.object({
 });
 
 export type CreateUserBody = z.infer<typeof createUserSchema>;
+
+export const loginSchema = z.object({
+  username,
+  password,
+});
+
+export type LoginBody = z.infer<typeof loginSchema>;
