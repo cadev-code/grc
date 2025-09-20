@@ -10,7 +10,9 @@
     "format": "prettier --write .",
     "migrate": "prisma migrate dev",
     "deploy:migrate": "prisma migrate deploy",
-    "generate": "prisma generate"
+    "generate": "prisma generate",
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "keywords": [],
   "author": "",
