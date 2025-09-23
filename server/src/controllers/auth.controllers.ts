@@ -19,7 +19,7 @@ export const createUser = async (
   if (existingUser) {
     throw new AppError(
       'Nombre de usuario ya existe',
-      400,
+      409,
       'USER_ALREADY_EXISTS',
       `Intento de creación de usuario fallido - El nombre de usuario '${username}' ya existe`,
     );
