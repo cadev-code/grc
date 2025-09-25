@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { validate, ERROR_MESSAGES } from '@/lib';
+import { useAlertStore } from '@/store';
 
 export const Login = () => {
   const [loading, setLoading] = useState(true);
@@ -24,23 +25,28 @@ export const Login = () => {
     setLoading(false);
   }, []);
 
+  const { showAlert } = useAlertStore();
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (loading) return;
 
     if (!validate.username(username)) {
-      console.log(ERROR_MESSAGES.username.invalid);
+      showAlert(ERROR_MESSAGES.username.invalid, 'error');
       return;
     }
 
     if (!validate.password(password)) {
-      console.log(ERROR_MESSAGES.password.invalid);
+      showAlert(ERROR_MESSAGES.password.invalid, 'error');
       return;
     }
 
+    setLoading(true);
+    setTimeout(() => setLoading(false), 2000);
     console.log('Correct login');
   };
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4">
       <Card className="w-full max-w-md border-border">
