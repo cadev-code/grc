@@ -29,7 +29,10 @@ export const authMiddleware = (
       process.env.JWT_SECRET || 'default_secret',
     ) as JwtPayload;
 
-    (req as Request & { user: JwtPayload }).user = payload;
+    (req as Request & { user: JwtPayload }).user = {
+      id: payload.id,
+      username: payload.username,
+    };
     next();
   } catch {
     throw new AppError(
