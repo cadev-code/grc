@@ -1,25 +1,28 @@
-import { useAlertStore } from '@/store';
+import { useAlertStore, useAuthStore } from '@/store';
 import { useMutation } from '@tanstack/react-query';
-import { LoginBody, LoginResponse } from '@/types/auth';
+import { LoginBody, User } from '@/types/auth';
 import { poster } from '@/api';
 import { AxiosError } from 'axios';
 import { useNavigate } from 'react-router';
 
 export const useLogin = () => {
   const { showAlert } = useAlertStore();
+
+  const { login } = useAuthStore();
   const navigate = useNavigate();
 
   return useMutation<
-    LoginResponse,
+    User,
     AxiosError<{ message: string; error: string }>,
     LoginBody
   >({
-    mutationFn: (body: LoginBody) => poster<LoginResponse>('/auth/login', body),
+    mutationFn: (body: LoginBody) => poster<User>('/auth/login', body),
     onError: (error) => {
       showAlert(error.response?.data.message, 'error');
       console.error('Login error:', error.response?.data.error);
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      login(data);
       navigate('/authenticated');
     },
   });

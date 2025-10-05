@@ -3,7 +3,8 @@ export interface LoginBody {
   password: string;
 }
 
-export interface LoginResponse {
+export type User = {
+  id: number;
   fullname: string;
   username: string;
-}
+};
