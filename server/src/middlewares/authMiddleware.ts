@@ -33,6 +33,7 @@ export const authMiddleware = (
       id: payload.id,
       username: payload.username,
     };
+
     next();
   } catch {
     throw new AppError(

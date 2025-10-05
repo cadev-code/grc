@@ -5,19 +5,22 @@ import { poster } from '@/api';
 import { AxiosError } from 'axios';
 import { useNavigate } from 'react-router';
 
-
 export const useLogin = () => {
   const { showAlert } = useAlertStore();
   const navigate = useNavigate();
 
-  return useMutation<LoginResponse, AxiosError<{ message: string, error: string }>, LoginBody>({
+  return useMutation<
+    LoginResponse,
+    AxiosError<{ message: string; error: string }>,
+    LoginBody
+  >({
     mutationFn: (body: LoginBody) => poster<LoginResponse>('/auth/login', body),
     onError: (error) => {
       showAlert(error.response?.data.message, 'error');
-      console.error('Login error:', error.response?.data.error)
+      console.error('Login error:', error.response?.data.error);
     },
     onSuccess: () => {
-      navigate('/authenticated')
-    }
-  })
+      navigate('/authenticated');
+    },
+  });
 };
