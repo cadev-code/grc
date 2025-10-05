@@ -13,6 +13,7 @@ type AlertState = {
 
 export const useAlertStore = create<AlertState>((set) => ({
   alert: null,
-  showAlert: (message = 'Ocurrio un error', type = 'info') => set({ alert: { message, type } }),
+  showAlert: (message = 'Ocurrió un error', type = 'info') =>
+    set({ alert: { message, type } }),
   clearAlert: () => set({ alert: null }),
 }));
