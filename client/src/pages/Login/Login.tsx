@@ -10,27 +10,25 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { validate, ERROR_MESSAGES } from '@/lib';
 import { useAlertStore } from '@/store';
+import { useLogin } from '@/hooks';
 
 export const Login = () => {
-  const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(false);
 
-  useEffect(() => {
-    setLoading(false);
-  }, []);
-
   const { showAlert } = useAlertStore();
+
+  const login = useLogin();
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (loading) return;
+    if (login.isPending) return;
 
     if (!validate.username(username)) {
       showAlert(ERROR_MESSAGES.username.invalid, 'error');
@@ -42,9 +40,7 @@ export const Login = () => {
       return;
     }
 
-    setLoading(true);
-    setTimeout(() => setLoading(false), 2000);
-    console.log('Correct login');
+    login.mutate({ username, password });
   };
 
   return (
@@ -68,7 +64,7 @@ export const Login = () => {
                 placeholder="user.name"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                disabled={loading}
+                disabled={login.isPending}
                 required
               />
             </div>
@@ -86,7 +82,7 @@ export const Login = () => {
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  disabled={loading}
+                  disabled={login.isPending}
                   required
                   className="pr-10"
                 />
@@ -123,8 +119,8 @@ export const Login = () => {
               </Label>
             </div>
 
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? (
+            <Button type="submit" className="w-full" disabled={login.isPending}>
+              {login.isPending ? (
                 <span className="inline-flex items-center gap-2">
                   <Loader2 className="h-4 w-4 animate-spin" /> Iniciando sesión
                 </span>
