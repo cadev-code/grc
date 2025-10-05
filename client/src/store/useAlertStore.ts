@@ -1,18 +1,18 @@
 import { create } from 'zustand';
 
 type Alert = {
-  message: string;
+  message?: string;
   type?: 'success' | 'error' | 'info';
 };
 
 type AlertState = {
   alert: Alert | null;
-  showAlert: (message: string, type?: Alert['type']) => void;
+  showAlert: (message?: string, type?: Alert['type']) => void;
   clearAlert: () => void;
 };
 
 export const useAlertStore = create<AlertState>((set) => ({
   alert: null,
-  showAlert: (message, type = 'info') => set({ alert: { message, type } }),
+  showAlert: (message = 'Ocurrio un error', type = 'info') => set({ alert: { message, type } }),
   clearAlert: () => set({ alert: null }),
 }));
