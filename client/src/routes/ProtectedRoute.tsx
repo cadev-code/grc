@@ -1,11 +1,20 @@
-import { useAuthStore } from '@/store';
+import { useCurrentUser } from '@/hooks';
+import { Loader2 } from 'lucide-react';
 import { JSX } from 'react';
 import { Navigate } from 'react-router';
 
 export const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
-  const { user } = useAuthStore();
+  const { data: user, isLoading, isError } = useCurrentUser();
 
-  if (!user) {
+  if (isLoading) {
+    return (
+      <div className="w-[100vw] h-[100vh] flex items-center justify-center text-gray-600">
+        <Loader2 className="h-12 w-12 animate-spin" />
+      </div>
+    );
+  }
+
+  if (isError || !user) {
     return <Navigate to="/login" replace />;
   }
 
