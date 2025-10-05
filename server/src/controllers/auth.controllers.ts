@@ -55,7 +55,7 @@ export const login = async (
 
   if (!user) {
     throw new AppError(
-      'El nombre de usuario no existe',
+      'Credenciales inválidas',
       404,
       'USER_NOT_FOUND',
       `Intento de autenticación fallido - El nombre de usuario '${username}' no existe`,
@@ -69,7 +69,7 @@ export const login = async (
 
   if (!isPasswordValid) {
     throw new AppError(
-      'La contraseña es incorrecta',
+      'Credenciales inválidas',
       401,
       'INVALID_CREDENTIALS',
       `Intento de autenticación fallido - Contraseña incorrecta para el usuario '${username}'`,
