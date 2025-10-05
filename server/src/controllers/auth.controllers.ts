@@ -79,6 +79,7 @@ export const login = async (
   const token = jwt.sign(
     {
       id: user.id,
+      fullname: user.fullname,
       username: user.username,
     },
     process.env.JWT_SECRET || 'default_secret',
@@ -96,6 +97,7 @@ export const login = async (
       maxAge: 1000 * 60 * 60, // 1 hour
     })
     .json({
+      id: user.id,
       fullname: user.fullname,
       username: user.username,
     });

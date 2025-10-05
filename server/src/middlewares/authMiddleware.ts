@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 
 interface JwtPayload {
   id: number;
+  fullname: string;
   username: string;
 }
 
@@ -31,6 +32,7 @@ export const authMiddleware = (
 
     (req as Request & { user: JwtPayload }).user = {
       id: payload.id,
+      fullname: payload.fullname,
       username: payload.username,
     };
 

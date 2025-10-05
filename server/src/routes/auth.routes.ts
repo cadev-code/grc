@@ -11,7 +11,11 @@ router.post('/auth/login', validateInput(loginSchema), login);
 // Rutas protegidas
 router.get('/auth/me', authMiddleware, (req: Request, res: Response) => {
   res.json({
-    user: (req as Request & { user: { id: number; username: string } }).user,
+    ...(
+      req as Request & {
+        user: { id: number; fullname: string; username: string };
+      }
+    ).user,
   });
 });
 
