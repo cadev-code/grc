@@ -7,6 +7,11 @@ services:
       - 3306:3306
     networks:
       - app_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
   server:
     build: ./server
     image: grc_server
@@ -17,7 +22,8 @@ services:
       - ./server:/app
       - /app/node_modules
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
       - app_network
   client:
