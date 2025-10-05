@@ -1,4 +1,4 @@
-import { useAlertStore, useAuthStore } from '@/store';
+import { useAlertStore } from '@/store';
 import { useMutation } from '@tanstack/react-query';
 import { LoginBody, User } from '@/types/auth';
 import { poster } from '@/api';
@@ -8,7 +8,6 @@ import { useNavigate } from 'react-router';
 export const useLogin = () => {
   const { showAlert } = useAlertStore();
 
-  const { login } = useAuthStore();
   const navigate = useNavigate();
 
   return useMutation<
@@ -21,8 +20,7 @@ export const useLogin = () => {
       showAlert(error.response?.data.message, 'error');
       console.error('Login error:', error.response?.data.error);
     },
-    onSuccess: (data) => {
-      login(data);
+    onSuccess: () => {
       navigate('/authenticated');
     },
   });
