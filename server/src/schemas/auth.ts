@@ -24,6 +24,7 @@ export type CreateUserBody = z.infer<typeof createUserSchema>;
 export const loginSchema = z.object({
   username,
   password,
+  rememberMe: z.boolean(),
 });
 
 export type LoginBody = z.infer<typeof loginSchema>;

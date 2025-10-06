@@ -45,7 +45,7 @@ export const login = async (
   req: Request<object, object, LoginBody>,
   res: Response,
 ) => {
-  const { username, password } = req.body;
+  const { username, password, rememberMe } = req.body;
 
   const user = await prisma.user.findUnique({
     where: {
@@ -84,7 +84,7 @@ export const login = async (
     },
     process.env.JWT_SECRET || 'default_secret',
     {
-      expiresIn: '1h',
+      expiresIn: rememberMe ? '8h' : '30m', // 8 horas o 30 minutos
     },
   );
 
@@ -94,7 +94,7 @@ export const login = async (
     .cookie('access_token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      maxAge: 1000 * 60 * 60, // 1 hour
+      maxAge: 1000 * 60 * (rememberMe ? 60 * 8 : 30), // 8 horas o 30 minutos
     })
     .json({
       id: user.id,
