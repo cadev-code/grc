@@ -14,12 +14,23 @@ import React, { useState } from 'react';
 import { validate, ERROR_MESSAGES } from '@/lib';
 import { useAlertStore } from '@/store';
 import { useLogin } from '@/hooks';
+import { LoginBody } from '@/types';
 
 export const Login = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [form, setForm] = useState<LoginBody>({
+    username: '',
+    password: '',
+    rememberMe: false,
+  });
+
+  const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
+  };
+
   const [showPassword, setShowPassword] = useState(false);
-  const [remember, setRemember] = useState(false);
 
   const { showAlert } = useAlertStore();
 
@@ -30,17 +41,17 @@ export const Login = () => {
 
     if (login.isPending) return;
 
-    if (!validate.username(username)) {
+    if (!validate.username(form.username)) {
       showAlert(ERROR_MESSAGES.username.invalid, 'error');
       return;
     }
 
-    if (!validate.password(password)) {
+    if (!validate.password(form.password)) {
       showAlert(ERROR_MESSAGES.password.invalid, 'error');
       return;
     }
 
-    login.mutate({ username, password });
+    login.mutate(form);
   };
 
   return (
@@ -62,8 +73,8 @@ export const Login = () => {
                 type="text"
                 autoComplete="username"
                 placeholder="user.name"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+                value={form.username}
+                onChange={onInputChange}
                 disabled={login.isPending}
                 required
               />
@@ -80,8 +91,8 @@ export const Login = () => {
                   type={showPassword ? 'text' : 'password'}
                   autoComplete="password"
                   placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  value={form.password}
+                  onChange={onInputChange}
                   disabled={login.isPending}
                   required
                   className="pr-10"
@@ -108,8 +119,10 @@ export const Login = () => {
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="remember"
-                checked={remember}
-                onCheckedChange={(v) => setRemember(Boolean(v))}
+                checked={form.rememberMe}
+                onCheckedChange={(v) =>
+                  setForm({ ...form, rememberMe: Boolean(v) })
+                }
               />
               <Label
                 htmlFor="remember"
