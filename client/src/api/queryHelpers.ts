@@ -7,7 +7,7 @@ export const fetcher = async <T>(url: string): Promise<T> => {
 
 export const poster = async <T, B = unknown>(
   url: string,
-  body: B,
+  body?: B,
 ): Promise<T> => {
   // B para el tipado opcional del body
   const { data } = await axiosClient.post<T>(url, body);
