@@ -1,3 +1,4 @@
+import { Layout } from '@/components';
 import { useCurrentUser } from '@/hooks';
 import { Loader2 } from 'lucide-react';
 import { JSX } from 'react';
@@ -18,5 +19,5 @@ export const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
     return <Navigate to="/login" replace />;
   }
 
-  return children;
+  return <Layout>{children}</Layout>;
 };
