@@ -7,14 +7,13 @@ import { Incidents } from '@/pages';
 export const AppRoutes = () => {
   return (
     <Routes>
-      <Route
-        path="login"
-        element={
-          <PublicRoute>
-            <Login />
-          </PublicRoute>
-        }
-      />
+      <Route element={<PublicRoute />}>
+        <Route path="login" element={<Login />} />
+
+        <Route index element={<Navigate to="/login" replace />} />
+
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Route>
 
       <Route element={<ProtectedRoute />}>
         <Route path="incidentes" element={<Incidents />} />
@@ -23,8 +22,6 @@ export const AppRoutes = () => {
 
         <Route path="*" element={<Navigate to="/incidentes" replace />} />
       </Route>
-
-      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
 };
