@@ -1,4 +1,4 @@
-import { ChevronUp, LogOut, ShieldCheck, User2 } from 'lucide-react';
+import { ChevronUp, Cog, LogOut, ShieldCheck, User2 } from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -26,6 +26,7 @@ const items = [
     icon: ShieldCheck,
   },
 ];
+
 export const AppSidebar = () => {
   const { data: user } = useCurrentUser();
   const logout = useLogout();
@@ -47,6 +48,21 @@ export const AppSidebar = () => {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>Administración</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link to="/management" className="flex items-center gap-1">
+                    <Cog size={20} />
+                    <span>Usuarios</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

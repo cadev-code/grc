@@ -2,7 +2,7 @@ import { Login } from '@/pages';
 import { Navigate, Route, Routes } from 'react-router';
 import { ProtectedRoute } from './ProtectedRoute';
 import { PublicRoute } from './PublicRoute';
-import { Incidents } from '@/pages';
+import { Incidents, Management } from '@/pages';
 
 export const AppRoutes = () => {
   return (
@@ -17,6 +17,7 @@ export const AppRoutes = () => {
 
       <Route element={<ProtectedRoute />}>
         <Route path="incidentes" element={<Incidents />} />
+        <Route path="management" element={<Management />} />
 
         <Route index element={<Navigate to="/incidentes" replace />} />
 
