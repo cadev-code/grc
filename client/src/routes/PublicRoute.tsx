@@ -15,7 +15,7 @@ export const PublicRoute = ({ children }: { children: JSX.Element }) => {
   }
 
   if (!isError || user) {
-    return <Navigate to="/authenticated" replace />;
+    return <Navigate to="/incidentes" replace />;
   }
 
   return children;

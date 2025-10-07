@@ -21,7 +21,7 @@ export const useLogin = () => {
       console.error('Login error:', error.response?.data.error);
     },
     onSuccess: () => {
-      navigate('/authenticated');
+      navigate('/incidentes');
     },
   });
 };
