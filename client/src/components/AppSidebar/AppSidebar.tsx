@@ -1,4 +1,10 @@
-import { ChevronUp, Cog, LogOut, ShieldCheck, User2 } from 'lucide-react';
+import {
+  ChevronUp,
+  CircleUserRound,
+  LogOut,
+  ShieldCheck,
+  UserCog2,
+} from 'lucide-react';
 import {
   Sidebar,
   SidebarContent,
@@ -58,7 +64,7 @@ export const AppSidebar = () => {
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
                   <Link to="/management" className="flex items-center gap-1">
-                    <Cog size={20} />
+                    <UserCog2 size={20} />
                     <span>Usuarios</span>
                   </Link>
                 </SidebarMenuButton>
@@ -73,7 +79,7 @@ export const AppSidebar = () => {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton className="cursor-pointer py-4">
-                  <User2 />
+                  <CircleUserRound />
                   <span className="truncate">{user?.fullname}</span>
                   <ChevronUp className="ml-auto" />
                 </SidebarMenuButton>
