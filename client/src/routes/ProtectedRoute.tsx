@@ -1,10 +1,9 @@
 import { Layout } from '@/components';
 import { useCurrentUser } from '@/hooks';
 import { Loader2 } from 'lucide-react';
-import { JSX } from 'react';
-import { Navigate } from 'react-router';
+import { Navigate, Outlet } from 'react-router';
 
-export const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
+export const ProtectedRoute = () => {
   const { data: user, isLoading, isError } = useCurrentUser();
 
   if (isLoading) {
@@ -19,5 +18,9 @@ export const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
     return <Navigate to="/login" replace />;
   }
 
-  return <Layout>{children}</Layout>;
+  return (
+    <Layout>
+      <Outlet />
+    </Layout>
+  );
 };

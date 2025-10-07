@@ -16,25 +16,16 @@ export const AppRoutes = () => {
         }
       />
 
-      <Route
-        path="incidentes"
-        element={
-          <ProtectedRoute>
-            <Incidents />
-          </ProtectedRoute>
-        }
-      />
+      <Route element={<ProtectedRoute />}>
+        <Route path="incidentes" element={<Incidents />} />
+        <Route path="authenticated" element={<AuthenticatedUser />} />
 
-      <Route
-        path="authenticated"
-        element={
-          <ProtectedRoute>
-            <AuthenticatedUser />
-          </ProtectedRoute>
-        }
-      />
+        <Route index element={<Navigate to="/incidentes" replace />} />
 
-      <Route path="/*" element={<Navigate to="/login" />} />
+        <Route path="*" element={<Navigate to="/incidentes" replace />} />
+      </Route>
+
+      <Route path="*" element={<Navigate to="/login" replace />} />
     </Routes>
   );
 };
