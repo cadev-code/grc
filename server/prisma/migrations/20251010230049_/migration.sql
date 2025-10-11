@@ -10,6 +10,27 @@ CREATE TABLE `User` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
+CREATE TABLE `Rol` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `rol` VARCHAR(191) NOT NULL,
+    `title` VARCHAR(191) NOT NULL,
+
+    UNIQUE INDEX `Rol_rol_key`(`rol`),
+    UNIQUE INDEX `Rol_title_key`(`title`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `UserRol` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `userId` INTEGER NOT NULL,
+    `rolId` INTEGER NOT NULL,
+
+    UNIQUE INDEX `UserRol_userId_key`(`userId`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `Site` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `site` VARCHAR(191) NOT NULL,
@@ -83,6 +104,12 @@ CREATE TABLE `IncidentFile` (
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- AddForeignKey
+ALTER TABLE `UserRol` ADD CONSTRAINT `UserRol_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `UserRol` ADD CONSTRAINT `UserRol_rolId_fkey` FOREIGN KEY (`rolId`) REFERENCES `Rol`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Incident` ADD CONSTRAINT `Incident_siteId_fkey` FOREIGN KEY (`siteId`) REFERENCES `Site`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
