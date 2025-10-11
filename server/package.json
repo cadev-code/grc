@@ -11,8 +11,12 @@
     "migrate": "prisma migrate dev",
     "deploy:migrate": "prisma migrate deploy",
     "generate": "prisma generate",
+    "seed": "ts-node prisma/seed.ts",
     "test": "jest",
     "test:watch": "jest --watch"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   },
   "keywords": [],
   "author": "",
