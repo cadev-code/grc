@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import prisma from '../prisma_client';
 import { encryptPassword, logger } from '../helpers';
 import { CreateUserBody, LoginBody } from '../schemas';
@@ -9,96 +9,106 @@ import jwt from 'jsonwebtoken';
 export const createUser = async (
   req: Request<object, object, CreateUserBody>,
   res: Response,
+  next: NextFunction,
 ) => {
-  const { fullname, username, password } = req.body;
+  try {
+    const { fullname, username, password } = req.body;
 
-  const existingUser = await prisma.user.findUnique({
-    where: { username },
-  });
+    const existingUser = await prisma.user.findUnique({
+      where: { username },
+    });
 
-  if (existingUser) {
-    throw new AppError(
-      'Nombre de usuario ya existe',
-      409,
-      'USER_ALREADY_EXISTS',
-      `Intento de creación de usuario fallido - El nombre de usuario '${username}' ya existe`,
+    if (existingUser) {
+      throw new AppError(
+        'Nombre de usuario ya existe',
+        409,
+        'USER_ALREADY_EXISTS',
+        `Intento de creación de usuario fallido - El nombre de usuario '${username}' ya existe`,
+      );
+    }
+
+    const passwordHash = await encryptPassword(password);
+
+    await prisma.user.create({
+      data: {
+        fullname,
+        username,
+        passwordHash,
+      },
+    });
+
+    logger.info(
+      `Usuario creado exitosamente - Fullname: ${fullname}, Username: ${username}`,
     );
+    res.status(201).json({ message: 'Usuario creado exitosamente' });
+  } catch (error) {
+    next(error);
   }
-
-  const passwordHash = await encryptPassword(password);
-
-  await prisma.user.create({
-    data: {
-      fullname,
-      username,
-      passwordHash,
-    },
-  });
-
-  logger.info(
-    `Usuario creado exitosamente - Fullname: ${fullname}, Username: ${username}`,
-  );
-  res.status(201).json({ message: 'Usuario creado exitosamente' });
 };
 
 export const login = async (
   req: Request<object, object, LoginBody>,
   res: Response,
+  next: NextFunction,
 ) => {
-  const { username, password, rememberMe } = req.body;
+  try {
+    const { username, password, rememberMe } = req.body;
 
-  const user = await prisma.user.findUnique({
-    where: {
-      username,
-    },
-  });
-
-  if (!user) {
-    throw new AppError(
-      'Credenciales inválidas',
-      404,
-      'USER_NOT_FOUND',
-      `Intento de autenticación fallido - El nombre de usuario '${username}' no existe`,
-    );
-  }
-
-  const isPasswordValid = await compareEncryptedPassword(
-    password,
-    user.passwordHash,
-  );
-
-  if (!isPasswordValid) {
-    throw new AppError(
-      'Credenciales inválidas',
-      401,
-      'INVALID_CREDENTIALS',
-      `Intento de autenticación fallido - Contraseña incorrecta para el usuario '${username}'`,
-    );
-  }
-
-  const token = jwt.sign(
-    {
-      id: user.id,
-      fullname: user.fullname,
-      username: user.username,
-    },
-    process.env.JWT_SECRET || 'default_secret',
-    {
-      expiresIn: rememberMe ? '8h' : '30m', // 8 horas o 30 minutos
-    },
-  );
-
-  logger.info(`Usuario autenticado exitosamente - User: ${username}`);
-
-  res
-    .cookie('access_token', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 1000 * 60 * (rememberMe ? 60 * 8 : 30), // 8 horas o 30 minutos
-    })
-    .json({
-      id: user.id,
-      fullname: user.fullname,
-      username: user.username,
+    const user = await prisma.user.findUnique({
+      where: {
+        username,
+      },
     });
+
+    if (!user) {
+      throw new AppError(
+        'Credenciales inválidas',
+        404,
+        'USER_NOT_FOUND',
+        `Intento de autenticación fallido - El nombre de usuario '${username}' no existe`,
+      );
+    }
+
+    const isPasswordValid = await compareEncryptedPassword(
+      password,
+      user.passwordHash,
+    );
+
+    if (!isPasswordValid) {
+      throw new AppError(
+        'Credenciales inválidas',
+        401,
+        'INVALID_CREDENTIALS',
+        `Intento de autenticación fallido - Contraseña incorrecta para el usuario '${username}'`,
+      );
+    }
+
+    const token = jwt.sign(
+      {
+        id: user.id,
+        fullname: user.fullname,
+        username: user.username,
+      },
+      process.env.JWT_SECRET || 'default_secret',
+      {
+        expiresIn: rememberMe ? '8h' : '30m', // 8 horas o 30 minutos
+      },
+    );
+
+    logger.info(`Usuario autenticado exitosamente - User: ${username}`);
+
+    res
+      .cookie('access_token', token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 1000 * 60 * (rememberMe ? 60 * 8 : 30), // 8 horas o 30 minutos
+      })
+      .json({
+        id: user.id,
+        fullname: user.fullname,
+        username: user.username,
+      });
+  } catch (error) {
+    next(error);
+  }
 };
