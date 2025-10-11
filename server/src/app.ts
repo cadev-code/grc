@@ -1,10 +1,11 @@
 import cors from 'cors';
 import express from 'express';
-
-import authRoutes from './routes/auth.routes';
-import { errorHandler } from './middlewares';
 import dotenv from 'dotenv';
 import cookieParser from 'cookie-parser';
+
+import authRoutes from './routes/auth.routes';
+import rolesRoutes from './routes/roles.routes';
+import { errorHandler } from './middlewares';
 
 const app = express();
 const PORT = 8080;
@@ -17,6 +18,7 @@ app.use(cookieParser());
 app.use(express.json());
 
 app.use(authRoutes);
+app.use(rolesRoutes);
 
 app.use(errorHandler);
 
