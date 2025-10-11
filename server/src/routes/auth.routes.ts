@@ -2,6 +2,7 @@ import { Request, Response, Router } from 'express';
 import { authMiddleware, validateInput } from '../middlewares';
 import { createUser, login } from '../controllers';
 import { createUserSchema, loginSchema } from '../schemas';
+import { User } from '../types';
 
 const router = Router();
 
@@ -13,7 +14,7 @@ router.get('/auth/me', authMiddleware, (req: Request, res: Response) => {
   res.json({
     ...(
       req as Request & {
-        user: { id: number; fullname: string; username: string };
+        user: User;
       }
     ).user,
   });
