@@ -1,6 +1,6 @@
 import { useAlertStore } from '@/store';
 import { useMutation } from '@tanstack/react-query';
-import { LoginBody, User } from '@/types/auth';
+import { LoginBody, User } from '@/types/auth.types';
 import { poster } from '@/api';
 import { AxiosError } from 'axios';
 import { useNavigate } from 'react-router';
