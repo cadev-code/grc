@@ -6,29 +6,22 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { useRoles } from '@/hooks';
 import { Rol } from '@/types';
-import { Plus, Search, Users } from 'lucide-react';
+import { Plus, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { FilterBar } from './components';
 
 export const Management = () => {
-  const { data, isLoading } = useRoles();
+  const { data: rolesData, isLoading: rolesIsLoading } = useRoles();
 
   const [roles, setRoles] = useState<Rol[]>([]);
 
   useEffect(() => {
-    if (!isLoading && !data?.error) {
-      setRoles(data?.data || []);
+    if (!rolesIsLoading && !rolesData?.error) {
+      setRoles(rolesData?.data || []);
     }
-  }, [data, isLoading]);
+  }, [rolesData, rolesIsLoading]);
 
   const [filter, setFilter] = useState({
     search: '',
@@ -78,39 +71,12 @@ export const Management = () => {
                 </Button>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-4 mb-6">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Buscar por nombre o usuario"
-                    className="pl-10"
-                    value={filter.search}
-                    onChange={(e) =>
-                      setFilter({ ...filter, search: e.target.value })
-                    }
-                  />
-                </div>
-
-                <Select
-                  value={filter.rol}
-                  onValueChange={(v: string) =>
-                    setFilter({ ...filter, rol: v })
-                  }
-                  disabled={isLoading}
-                >
-                  <SelectTrigger className="w-full sm:w-[220px]">
-                    <SelectValue placeholder="Rol" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todos los roles</SelectItem>
-                    {roles.map((r) => (
-                      <SelectItem key={r.id} value={r.rol}>
-                        {r.title}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              <FilterBar
+                filter={filter}
+                setFilter={setFilter}
+                roles={roles}
+                isLoading={rolesIsLoading}
+              />
             </div>
           </CardContent>
         </Card>
