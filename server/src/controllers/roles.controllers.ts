@@ -69,7 +69,7 @@ export const createRol = async (
     });
 
     logger.info(
-      `Rol creado exitosamente - ID: ${newRol.id}, Rol: ${newRol.rol}, Title: ${newRol.title} (Creado por: ${req.user?.username || 'Unknown'})`,
+      `Rol creado exitosamente - ID: '${newRol.id}', Rol: '${newRol.rol}', Title: '${newRol.title}' (Creado por: ${req.user?.username || 'Unknown'})`,
     );
 
     res.status(201).json({ error: null, message: 'Rol creado exitosamente' });
@@ -133,7 +133,7 @@ export const updateRol = async (
       );
     }
 
-    await prisma.rol.update({
+    const updatedRol = await prisma.rol.update({
       where: { id },
       data: {
         rol,
@@ -142,7 +142,7 @@ export const updateRol = async (
     });
 
     logger.info(
-      `Rol actualizado exitosamente - ID: ${id}, Nuevo Rol: ${rol}, Nuevo Title: ${title} (Modificado por: ${req.user?.username || 'Unknown'})`,
+      `Rol actualizado exitosamente - ID: '${updatedRol.id}', Nuevo Rol: '${updatedRol.rol}', Nuevo Title: '${updatedRol.title}' (Modificado por: ${req.user?.username || 'Unknown'})`,
     );
 
     res
