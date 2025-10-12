@@ -61,7 +61,7 @@ export const createRol = async (
       );
     }
 
-    await prisma.rol.create({
+    const newRol = await prisma.rol.create({
       data: {
         rol,
         title,
@@ -69,7 +69,7 @@ export const createRol = async (
     });
 
     logger.info(
-      `Rol creado exitosamente - Rol: ${rol}, Title: ${title} (Creado por: ${req.user?.username || 'Unknown'})`,
+      `Rol creado exitosamente - ID: ${newRol.id}, Rol: ${newRol.rol}, Title: ${newRol.title} (Creado por: ${req.user?.username || 'Unknown'})`,
     );
 
     res.status(201).json({ error: null, message: 'Rol creado exitosamente' });
