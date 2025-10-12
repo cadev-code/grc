@@ -14,15 +14,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useRoles } from '@/hooks';
+import { Rol } from '@/types';
 import { Plus, Search, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export const Management = () => {
-  const [rol, setRol] = useState('');
+  const { data, isLoading } = useRoles();
+
+  const [roles, setRoles] = useState<Rol[]>([]);
 
   useEffect(() => {
-    setRol('all');
-  }, []);
+    if (!isLoading && !data?.error) {
+      setRoles(data?.data || []);
+    }
+  }, [data, isLoading]);
+
+  const [filter, setFilter] = useState({
+    search: '',
+    rol: 'all',
+  });
 
   return (
     <div className="min-h-screen w-full">
@@ -73,18 +84,30 @@ export const Management = () => {
                   <Input
                     placeholder="Buscar por nombre o usuario"
                     className="pl-10"
+                    value={filter.search}
+                    onChange={(e) =>
+                      setFilter({ ...filter, search: e.target.value })
+                    }
                   />
                 </div>
 
                 <Select
-                  value={rol}
-                  // onValueChange={(v: any) => setRole(v)}
+                  value={filter.rol}
+                  onValueChange={(v: string) =>
+                    setFilter({ ...filter, rol: v })
+                  }
+                  disabled={isLoading}
                 >
                   <SelectTrigger className="w-full sm:w-[220px]">
                     <SelectValue placeholder="Rol" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">Todos los roles</SelectItem>
+                    {roles.map((r) => (
+                      <SelectItem key={r.id} value={r.rol}>
+                        {r.title}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
