@@ -152,3 +152,62 @@ export const updateRol = async (
     next(error);
   }
 };
+
+export const deleteRol = async (
+  req: Request<{ id: string }>,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const id = parseInt(req.params.id);
+
+    if (isNaN(id) || id <= 0) {
+      throw new AppError(
+        'ID de rol inválido',
+        400,
+        'INVALID_ROL_ID',
+        `Intento de eliminación de rol fallido - ID inválido proporcionado ('${req.params.id}') (Intentado por: ${req.user?.username || 'Unknown'})`,
+      );
+    }
+
+    const existingRol = await prisma.rol.findUnique({
+      where: { id },
+    });
+
+    if (!existingRol) {
+      throw new AppError(
+        `Rol inexistente`,
+        404,
+        'ROL_NOT_FOUND',
+        `Intento de eliminación de rol fallido - No se encontró un rol con el ID '${id}' (Intentado por: ${req.user?.username || 'Unknown'})`,
+      );
+    }
+
+    const usersWithThisRole = await prisma.userRol.findFirst({
+      where: { rolId: id },
+    });
+
+    if (usersWithThisRole) {
+      throw new AppError(
+        `No se puede eliminar el rol porque está asignado a uno o más usuarios`,
+        400,
+        'ROL_ASSIGNED_TO_USERS',
+        `Intento de eliminación de rol fallido - El rol ID '${id}' está asignado a usuarios (Intentado por: ${req.user?.username || 'Unknown'})`,
+      );
+    }
+
+    await prisma.rol.delete({
+      where: { id },
+    });
+
+    logger.info(
+      `Rol eliminado exitosamente - ID: '${id}', Rol: '${existingRol.rol}', Title: '${existingRol.title}' (Eliminado por: ${req.user?.username || 'Unknown'})`,
+    );
+
+    res
+      .status(200)
+      .json({ error: null, message: 'Rol eliminado exitosamente' });
+  } catch (error) {
+    next(error);
+  }
+};

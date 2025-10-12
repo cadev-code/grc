@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createRol, getAllRoles, updateRol } from '../controllers';
+import { createRol, deleteRol, getAllRoles, updateRol } from '../controllers';
 import { authMiddleware, validateInput } from '../middlewares';
 import { createRolSchema, updateRolSchema } from '../schemas';
 
@@ -15,5 +15,7 @@ router.post(
 );
 
 router.put('/roles', authMiddleware, validateInput(updateRolSchema), updateRol);
+
+router.delete('/roles/:id', authMiddleware, deleteRol);
 
 export default router;
