@@ -15,3 +15,9 @@ export const createRolSchema = z.object({
 });
 
 export type CreateRolBody = z.infer<typeof createRolSchema>;
+
+export const updateRolSchema = createRolSchema.extend({
+  id: z.number().int().positive(),
+});
+
+export type UpdateRolBody = z.infer<typeof updateRolSchema>;
