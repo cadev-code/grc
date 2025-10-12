@@ -8,7 +8,7 @@ export const Layout = ({ children }: { children: JSX.Element }) => {
       style={{ '--sidebar-width': '12rem' } as React.CSSProperties}
     >
       <AppSidebar />
-      <main>{children}</main>
+      <main className="w-full bg-gray-100">{children}</main>
     </SidebarProvider>
   );
 };
