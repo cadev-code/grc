@@ -1,5 +1,5 @@
 import { describe, expect, it } from '@jest/globals';
-import { createUserSchema, loginSchema } from '../auth';
+import { createUserSchema, loginSchema } from '../auth.schema';
 
 describe('auth schemas', () => {
   describe('createUserSchema', () => {
