@@ -19,16 +19,12 @@ export const rolesColumns = ({
   onDelete,
 }: RolesColumnsProps): ColumnDef<Rol>[] => [
   {
-    accessorKey: 'id',
-    header: 'ID',
-  },
-  {
     accessorKey: 'rol',
-    header: 'Nombre',
+    header: 'Identificador',
   },
   {
     accessorKey: 'title',
-    header: 'Descripción',
+    header: 'Nombre',
   },
   {
     id: 'actions',
