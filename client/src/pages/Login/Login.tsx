@@ -3,6 +3,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
@@ -10,49 +11,46 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
-import React, { useState } from 'react';
-import { validate, ERROR_MESSAGES } from '@/lib';
-import { useAlertStore } from '@/store';
+import { useState } from 'react';
+import { REGEX } from '@/lib';
 import { useLogin } from '@/hooks';
-import { LoginBody } from '@/types';
+import { z } from 'zod';
+import { useForm } from '@tanstack/react-form';
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from '@/components/ui/field';
+
+const formSchema = z.object({
+  username: z
+    .string()
+    .regex(REGEX.USERNAME, 'Nombre de usuario inválido o inexistente.'),
+  password: z
+    .string()
+    .regex(REGEX.PASSWORD, 'Contraseña inválida o incorrecta.'),
+  rememberMe: z.boolean(),
+});
 
 export const Login = () => {
-  const [form, setForm] = useState<LoginBody>({
-    username: '',
-    password: '',
-    rememberMe: false,
+  const form = useForm({
+    defaultValues: {
+      username: '',
+      password: '',
+      rememberMe: false,
+    },
+    validators: {
+      onSubmit: formSchema,
+    },
+    onSubmit: (values) => {
+      login.mutate(values.value);
+    },
   });
-
-  const onInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
-  };
 
   const [showPassword, setShowPassword] = useState(false);
 
-  const { showAlert } = useAlertStore();
-
   const login = useLogin();
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    if (login.isPending) return;
-
-    if (!validate.username(form.username)) {
-      showAlert(ERROR_MESSAGES.username.invalid, 'error');
-      return;
-    }
-
-    if (!validate.password(form.password)) {
-      showAlert(ERROR_MESSAGES.password.invalid, 'error');
-      return;
-    }
-
-    login.mutate(form);
-  };
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4">
@@ -64,75 +62,116 @@ export const Login = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6" autoComplete="on">
-            <div className="space-y-2">
-              <Label htmlFor="username">Usuario</Label>
-              <Input
-                id="username"
+          <form
+            id="login"
+            onSubmit={(e) => {
+              e.preventDefault();
+              form.handleSubmit();
+            }}
+          >
+            <FieldGroup>
+              <form.Field
                 name="username"
-                type="text"
-                autoComplete="username"
-                placeholder="user.name"
-                value={form.username}
-                onChange={onInputChange}
-                disabled={login.isPending}
-                required
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid;
+                  return (
+                    <Field data-invalid={isInvalid}>
+                      <FieldLabel htmlFor={field.name}>Usuario</FieldLabel>
+                      <Input
+                        id={field.name}
+                        name={field.name}
+                        value={field.state.value}
+                        onBlur={field.handleBlur}
+                        onChange={(e) => field.handleChange(e.target.value)}
+                        disabled={login.isPending}
+                      />
+                      {isInvalid && (
+                        <FieldError errors={field.state.meta.errors} />
+                      )}
+                    </Field>
+                  );
+                }}
               />
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password">Contraseña</Label>
-              </div>
-              <div className="relative">
-                <Input
-                  id="password"
-                  name="password"
-                  type={showPassword ? 'text' : 'password'}
-                  autoComplete="password"
-                  placeholder="••••••••"
-                  value={form.password}
-                  onChange={onInputChange}
-                  disabled={login.isPending}
-                  required
-                  className="pr-10"
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-1 top-1/2 -translate-y-1/2"
-                  onClick={() => setShowPassword((v) => !v)}
-                  aria-label={
-                    showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'
-                  }
-                >
-                  {showPassword ? (
-                    <EyeOff className="h-4 w-4" />
-                  ) : (
-                    <Eye className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="remember"
-                checked={form.rememberMe}
-                onCheckedChange={(v) =>
-                  setForm({ ...form, rememberMe: Boolean(v) })
-                }
+              <form.Field
+                name="password"
+                children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid;
+                  return (
+                    <Field data-invalid={isInvalid}>
+                      <FieldLabel htmlFor={field.name}>Contraseña</FieldLabel>
+                      <div className="relative">
+                        <Input
+                          id={field.name}
+                          name={field.name}
+                          value={field.state.value}
+                          onBlur={field.handleBlur}
+                          onChange={(e) => field.handleChange(e.target.value)}
+                          type={showPassword ? 'text' : 'password'}
+                          autoComplete="password"
+                          placeholder="••••••••"
+                          disabled={login.isPending}
+                          className="pr-10"
+                        />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="absolute right-1 top-1/2 -translate-y-1/2"
+                          onClick={() => setShowPassword((v) => !v)}
+                          aria-label={
+                            showPassword
+                              ? 'Ocultar contraseña'
+                              : 'Mostrar contraseña'
+                          }
+                        >
+                          {showPassword ? (
+                            <EyeOff className="h-4 w-4" />
+                          ) : (
+                            <Eye className="h-4 w-4" />
+                          )}
+                        </Button>
+                      </div>
+                      {isInvalid && (
+                        <FieldError errors={field.state.meta.errors} />
+                      )}
+                    </Field>
+                  );
+                }}
               />
-              <Label
-                htmlFor="remember"
-                className="text-sm text-muted-foreground"
-              >
-                Recordarme en este dispositivo
-              </Label>
-            </div>
+              <form.Field
+                name="rememberMe"
+                children={(field) => {
+                  return (
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id={field.name}
+                        checked={field.state.value}
+                        onCheckedChange={(v) => field.handleChange(Boolean(v))}
+                      />
+                      <Label
+                        htmlFor={field.name}
+                        className="text-sm text-muted-foreground"
+                      >
+                        Recordarme en este dispositivo
+                      </Label>
+                    </div>
+                  );
+                }}
+              />
+            </FieldGroup>
+          </form>
+        </CardContent>
 
-            <Button type="submit" className="w-full" disabled={login.isPending}>
+        <CardFooter className="flex flex-col gap-4">
+          <Field orientation="horizontal">
+            <Button
+              form="login"
+              type="submit"
+              className="w-full"
+              disabled={login.isPending}
+            >
               {login.isPending ? (
                 <span className="inline-flex items-center gap-2">
                   <Loader2 className="h-4 w-4 animate-spin" /> Iniciando sesión
@@ -141,12 +180,11 @@ export const Login = () => {
                 'Entrar'
               )}
             </Button>
-
-            <div className="text-center text-sm text-muted-foreground">
-              ¿Olvidaste tu contraseña? Contacta al administrador.
-            </div>
-          </form>
-        </CardContent>
+          </Field>
+          <div className="text-center text-sm text-muted-foreground">
+            ¿Olvidaste tu contraseña? Contacta al administrador.
+          </div>
+        </CardFooter>
       </Card>
     </div>
   );
