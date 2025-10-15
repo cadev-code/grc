@@ -10,7 +10,7 @@ import { useRoles } from '@/hooks';
 import { Rol } from '@/types';
 import { Plus, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { FilterBar } from './components';
+import { FilterBar, RolesManagement } from './components';
 
 export const Management = () => {
   const { data: rolesData, isLoading: rolesIsLoading } = useRoles();
@@ -27,6 +27,8 @@ export const Management = () => {
     search: '',
     rol: 'all',
   });
+
+  const [openRoles, setOpenRoles] = useState(false);
 
   return (
     <div className="min-h-screen w-full">
@@ -66,6 +68,7 @@ export const Management = () => {
                   variant="secondary"
                   size="sm"
                   className="cursor-pointer"
+                  onClick={() => setOpenRoles(true)}
                 >
                   Administrar Roles
                 </Button>
@@ -81,6 +84,8 @@ export const Management = () => {
           </CardContent>
         </Card>
       </div>
+
+      <RolesManagement open={openRoles} onClose={() => setOpenRoles(false)} />
     </div>
   );
 };
