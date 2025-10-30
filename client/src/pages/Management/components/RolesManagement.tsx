@@ -7,7 +7,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Spinner } from '@/components/ui/spinner';
-import { useRoles } from '@/hooks';
+import { useCreateRole, useRoles } from '@/hooks';
 import { rolesColumns } from './rolesColumns';
 import { useReactTable, getCoreRowModel } from '@tanstack/react-table';
 import { Rol } from '@/types';
@@ -26,9 +26,22 @@ type Props = {
 
 export const RolesManagement = ({ open, onClose }: Props) => {
   const formSchema = z.object({
-    rol: z.string().min(1),
-    title: z.string().min(1),
+    rol: z
+      .string()
+      .min(1)
+      .regex(/^[a-zA-Z]+$/, {
+        message: 'El rol solo puede contener letras',
+      }),
+    title: z
+      .string()
+      .trim()
+      .min(1)
+      .regex(/^[a-zA-Z\s]+$/, {
+        message: 'El nombre solo puede contener letras y espacios',
+      }),
   });
+
+  const { mutate: createRol } = useCreateRole();
 
   const form = useForm({
     defaultValues: {
@@ -39,7 +52,9 @@ export const RolesManagement = ({ open, onClose }: Props) => {
       onSubmit: formSchema,
     },
     onSubmit: ({ value }) => {
-      console.log(value);
+      createRol(value);
+      setShowForm(false);
+      form.reset();
     },
   });
 

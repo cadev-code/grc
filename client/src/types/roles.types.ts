@@ -9,3 +9,5 @@ export interface RolesResponse {
   data: Rol[];
   count: number;
 }
+
+export type CreateRol = Omit<Rol, 'id'>;
