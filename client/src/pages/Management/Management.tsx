@@ -85,7 +85,7 @@ export const Management = () => {
         </Card>
       </div>
 
-      <RolesManagement open={openRoles} onClose={() => setOpenRoles(false)} />
+      <RolesManagement open={openRoles} onClose={setOpenRoles} />
     </div>
   );
 };

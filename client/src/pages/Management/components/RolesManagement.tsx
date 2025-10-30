@@ -13,6 +13,11 @@ import { useReactTable, getCoreRowModel } from '@tanstack/react-table';
 import { Rol } from '@/types';
 import { RolesTable } from './RolesTable';
 import { Button } from '@/components/ui/button';
+import { useForm } from '@tanstack/react-form';
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
+import z from 'zod';
+import { Input } from '@/components/ui/input';
+import { useEffect, useState } from 'react';
 
 type Props = {
   open: boolean;
@@ -20,6 +25,33 @@ type Props = {
 };
 
 export const RolesManagement = ({ open, onClose }: Props) => {
+  const formSchema = z.object({
+    rol: z.string().min(1),
+    title: z.string().min(1),
+  });
+
+  const form = useForm({
+    defaultValues: {
+      rol: '',
+      title: '',
+    },
+    validators: {
+      onSubmit: formSchema,
+    },
+    onSubmit: ({ value }) => {
+      console.log(value);
+    },
+  });
+
+  const [showForm, setShowForm] = useState(false);
+
+  useEffect(() => {
+    if (open) {
+      setShowForm(false);
+      form.reset();
+    }
+  }, [open, form]);
+
   const { isLoading, data, isError, error } = useRoles();
 
   const columns = rolesColumns({
@@ -57,9 +89,93 @@ export const RolesManagement = ({ open, onClose }: Props) => {
           />
         ) : (
           <div className="space-y-4">
-            <Button className="cursor-pointer" size="sm">
-              Agregar Rol
-            </Button>
+            {showForm ? (
+              <form
+                className="p-4 space-y-4 border rounded-md"
+                id="add-rol"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  form.handleSubmit();
+                }}
+              >
+                <FieldGroup className="flex flex-row gap-2 items-end">
+                  <form.Field
+                    name="rol"
+                    children={(field) => {
+                      const isInvalid =
+                        field.state.meta.isTouched && !field.state.meta.isValid;
+                      return (
+                        <Field data-invalid={isInvalid}>
+                          <FieldLabel htmlFor={field.name}>
+                            Identificador
+                          </FieldLabel>
+                          <Input
+                            className={
+                              isInvalid
+                                ? 'transition-colors border-red-400'
+                                : ''
+                            }
+                            id={field.name}
+                            name={field.name}
+                            value={field.state.value}
+                            onBlur={field.handleBlur}
+                            onChange={(e) => field.handleChange(e.target.value)}
+                            // agregar disabled si el formulario está en estado de envío
+                          />
+                        </Field>
+                      );
+                    }}
+                  />
+                  <form.Field
+                    name="title"
+                    children={(field) => {
+                      const isInvalid =
+                        field.state.meta.isTouched && !field.state.meta.isValid;
+                      return (
+                        <Field data-invalid={isInvalid}>
+                          <FieldLabel htmlFor={field.name}>Rol</FieldLabel>
+                          <Input
+                            className={
+                              isInvalid
+                                ? 'transition-colors border-red-400'
+                                : ''
+                            }
+                            id={field.name}
+                            name={field.name}
+                            value={field.state.value}
+                            onBlur={field.handleBlur}
+                            onChange={(e) => field.handleChange(e.target.value)}
+                            // agregar disabled si el formulario está en estado de envío
+                          />
+                        </Field>
+                      );
+                    }}
+                  />
+                </FieldGroup>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    className="flex-1"
+                    type="button"
+                    onClick={() => {
+                      form.reset();
+                      setShowForm(false);
+                    }}
+                  >
+                    Cancelar
+                  </Button>
+                  <Button type="submit">Guardar</Button>
+                </div>
+              </form>
+            ) : (
+              <Button
+                className="cursor-pointer"
+                size="sm"
+                onClick={() => setShowForm(true)}
+              >
+                Agregar Rol
+              </Button>
+            )}
             <RolesTable table={table} columns={columns} />
           </div>
         )}
