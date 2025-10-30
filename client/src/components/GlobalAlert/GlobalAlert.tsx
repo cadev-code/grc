@@ -21,7 +21,7 @@ export const GlobalAlert = () => {
   if (!alert) return null;
 
   return (
-    <div className="fixed flex justify-center w-full gap-4 bottom-8">
+    <div className="fixed flex justify-center w-full gap-4 bottom-8 z-[100]">
       <Alert
         className={`w-fit max-w-xl h-auto 
         ${alert?.type === 'success' ? 'text-green-500 border-green-300' : ''}
