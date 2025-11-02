@@ -18,6 +18,7 @@ import {
 import { rolesColumns } from './rolesColumns';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { useDeleteRol } from '@/hooks/useDeleteRol';
 
 export const RolesTable = ({ data }: { data: Rol[] }) => {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -26,12 +27,16 @@ export const RolesTable = ({ data }: { data: Rol[] }) => {
     pageSize: 4,
   });
 
+  // TODO: agregar loading para deshabilitar boton mientras se elimina
+  const { mutate: deleteRol } = useDeleteRol();
+
   const columns = rolesColumns({
     onEdit: (rol: Rol) => {
       console.log('Editar rol:', rol);
     },
     onDelete: (rol: Rol) => {
-      console.log('Eliminar rol:', rol);
+      // TODO: mostrar alerta para confirmar eliminacion
+      deleteRol(rol.id);
     },
   });
 
