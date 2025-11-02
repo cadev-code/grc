@@ -8,9 +8,6 @@ import {
 } from '@/components/ui/dialog';
 import { Spinner } from '@/components/ui/spinner';
 import { useCreateRole, useRoles } from '@/hooks';
-import { rolesColumns } from './rolesColumns';
-import { useReactTable, getCoreRowModel } from '@tanstack/react-table';
-import { Rol } from '@/types';
 import { RolesTable } from './RolesTable';
 import { Button } from '@/components/ui/button';
 import { useForm } from '@tanstack/react-form';
@@ -68,21 +65,6 @@ export const RolesManagement = ({ open, onClose }: Props) => {
   }, [open, form]);
 
   const { isLoading, data, isError, error } = useRoles();
-
-  const columns = rolesColumns({
-    onEdit: (rol: Rol) => {
-      console.log('Editar rol:', rol);
-    },
-    onDelete: (rol: Rol) => {
-      console.log('Eliminar rol:', rol);
-    },
-  });
-
-  const table = useReactTable({
-    data: data?.data ?? [],
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-  });
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -191,7 +173,7 @@ export const RolesManagement = ({ open, onClose }: Props) => {
                 Agregar Rol
               </Button>
             )}
-            <RolesTable table={table} columns={columns} />
+            <RolesTable data={data?.data || []} />
           </div>
         )}
       </DialogContent>

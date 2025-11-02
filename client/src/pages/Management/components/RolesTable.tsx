@@ -8,18 +8,38 @@ import {
 } from '@/components/ui/table';
 import { Rol } from '@/types';
 import {
-  ColumnDef,
   flexRender,
-  Table as ReactTable,
+  getCoreRowModel,
+  getSortedRowModel,
+  SortingState,
+  useReactTable,
 } from '@tanstack/react-table';
+import { rolesColumns } from './rolesColumns';
+import { useState } from 'react';
 
-export const RolesTable = ({
-  columns,
-  table,
-}: {
-  columns: ColumnDef<Rol>[];
-  table: ReactTable<Rol>;
-}) => {
+export const RolesTable = ({ data }: { data: Rol[] }) => {
+  const [sorting, setSorting] = useState<SortingState>([]);
+
+  const columns = rolesColumns({
+    onEdit: (rol: Rol) => {
+      console.log('Editar rol:', rol);
+    },
+    onDelete: (rol: Rol) => {
+      console.log('Eliminar rol:', rol);
+    },
+  });
+
+  const table = useReactTable({
+    data: data,
+    columns,
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    state: {
+      sorting,
+    },
+  });
+
   return (
     <div className="overflow-hidden rounded-md border">
       <Table>

@@ -1,7 +1,7 @@
-import { ColumnDef } from '@tanstack/react-table';
+import { Column, ColumnDef } from '@tanstack/react-table';
 import { Rol } from '@/types';
 import { Button } from '@/components/ui/button';
-import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
+import { ArrowUpDown, MoreHorizontal, Pencil, Trash2 } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,17 +14,46 @@ type RolesColumnsProps = {
   onDelete: (rol: Rol) => void;
 };
 
+const handleSort = (column: Column<Rol, unknown>) => {
+  const currentSort = column.getIsSorted();
+
+  if (currentSort === false) {
+    // No está ordenado
+    column.toggleSorting(false); // false para ascendente
+  } else if (currentSort === 'asc') {
+    // Está ascendente
+    column.toggleSorting(true); // true para descendente
+  } else {
+    // Está descendente
+    column.clearSorting(); // limpiar ordenamiento
+  }
+};
+
 export const rolesColumns = ({
   onEdit,
   onDelete,
 }: RolesColumnsProps): ColumnDef<Rol>[] => [
   {
     accessorKey: 'rol',
-    header: 'Identificador',
+    header: ({ column }) => {
+      return (
+        <Button variant="ghost" onClick={() => handleSort(column)}>
+          Identificador
+          <ArrowUpDown />
+        </Button>
+      );
+    },
   },
   {
     accessorKey: 'title',
-    header: 'Nombre',
+    header: ({ column }) => {
+      return (
+        <Button variant="ghost" onClick={() => handleSort(column)}>
+          Nombre
+          <ArrowUpDown />
+        </Button>
+      );
+    },
   },
   {
     id: 'actions',
