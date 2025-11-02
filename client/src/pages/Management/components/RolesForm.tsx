@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { useCreateRole } from '@/hooks';
 import z from 'zod';
 import { Button } from '@/components/ui/button';
+import { Spinner } from '@/components/ui/spinner';
 
 export const RolesForm = ({
   setShowForm,
@@ -26,8 +27,12 @@ export const RolesForm = ({
       }),
   });
 
-  // TODO: agregar loading para deshabilitar botones mientras se elimina
-  const { mutate: createRol } = useCreateRole();
+  const closeForm = () => {
+    setShowForm(false);
+    form.reset();
+  };
+
+  const createRol = useCreateRole(closeForm);
 
   const form = useForm({
     defaultValues: {
@@ -38,22 +43,20 @@ export const RolesForm = ({
       onSubmit: formSchema,
     },
     onSubmit: ({ value }) => {
-      createRol(value);
-      setShowForm(false);
-      form.reset();
+      createRol.mutate(value);
     },
   });
 
   return (
     <form
-      className="p-4 space-y-4 border rounded-md"
+      className="p-4 border rounded-md relative"
       id="add-rol"
       onSubmit={(e) => {
         e.preventDefault();
         form.handleSubmit();
       }}
     >
-      <FieldGroup className="flex flex-row gap-2 items-end">
+      <FieldGroup className="flex flex-row gap-2 items-end mb-4">
         <form.Field
           name="rol"
           children={(field) => {
@@ -71,7 +74,7 @@ export const RolesForm = ({
                   value={field.state.value}
                   onBlur={field.handleBlur}
                   onChange={(e) => field.handleChange(e.target.value)}
-                  // agregar disabled si el formulario está en estado de envío
+                  disabled={createRol.isPending}
                 />
               </Field>
             );
@@ -94,7 +97,7 @@ export const RolesForm = ({
                   value={field.state.value}
                   onBlur={field.handleBlur}
                   onChange={(e) => field.handleChange(e.target.value)}
-                  // agregar disabled si el formulario está en estado de envío
+                  disabled={createRol.isPending}
                 />
               </Field>
             );
@@ -110,11 +113,19 @@ export const RolesForm = ({
             form.reset();
             setShowForm(false);
           }}
+          disabled={createRol.isPending}
         >
           Cancelar
         </Button>
-        <Button type="submit">Guardar</Button>
+        <Button type="submit" disabled={createRol.isPending}>
+          Guardar
+        </Button>
       </div>
+      {createRol.isPending && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black/10 rounded">
+          <Spinner className="size-6" />
+        </div>
+      )}
     </form>
   );
 };

@@ -4,7 +4,7 @@ import { useAlertStore } from '@/store';
 import { AxiosError } from 'axios';
 import { CreateRol } from '@/types';
 
-export const useCreateRole = () => {
+export const useCreateRole = (closeForm: () => void) => {
   const queryClient = useQueryClient();
   const { showAlert } = useAlertStore();
 
@@ -13,6 +13,7 @@ export const useCreateRole = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['roles'] });
       showAlert('Rol creado exitosamente', 'success');
+      closeForm();
     },
     onError: (error: AxiosError<{ message: string; error: string }>) => {
       showAlert(error.response?.data?.message || 'Ocurrió un error', 'error');
