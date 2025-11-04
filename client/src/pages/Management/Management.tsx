@@ -48,7 +48,7 @@ export const Management = () => {
         </div>
       </header>
 
-      <div className="container px-6 py-8 space-y-6">
+      <div className="px-6 py-8 space-y-6">
         <Card className="rounded-md">
           <CardHeader>
             <CardTitle>Usuarios registrados</CardTitle>
