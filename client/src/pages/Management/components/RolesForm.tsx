@@ -5,6 +5,9 @@ import { useCreateRole } from '@/hooks';
 import z from 'zod';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
+import { HoverCard, HoverCardContent } from '@/components/ui/hover-card';
+import { HoverCardTrigger } from '@radix-ui/react-hover-card';
+import { CircleQuestionMark } from 'lucide-react';
 
 export const RolesForm = ({
   setShowForm,
@@ -65,17 +68,37 @@ export const RolesForm = ({
             return (
               <Field data-invalid={isInvalid}>
                 <FieldLabel htmlFor={field.name}>Identificador</FieldLabel>
-                <Input
-                  className={
-                    isInvalid ? 'transition-colors border-red-400' : ''
-                  }
-                  id={field.name}
-                  name={field.name}
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  disabled={createRol.isPending}
-                />
+                <div className="relative">
+                  <Input
+                    className={`pr-10 ${isInvalid ? 'transition-colors border-red-400' : ''}`}
+                    id={field.name}
+                    name={field.name}
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    disabled={createRol.isPending}
+                  />
+                  <div className="absolute right-1 top-1/2 -translate-y-1/2">
+                    <HoverCard>
+                      <HoverCardTrigger>
+                        <Button
+                          className="pointer-events-none"
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                        >
+                          <CircleQuestionMark />
+                        </Button>
+                      </HoverCardTrigger>
+                      <HoverCardContent>
+                        <p className="text-xs">
+                          El identificador del rol debe ser único y solo puede
+                          contener letras minúsculas sin espacios.
+                        </p>
+                      </HoverCardContent>
+                    </HoverCard>
+                  </div>
+                </div>
               </Field>
             );
           }}
@@ -88,17 +111,37 @@ export const RolesForm = ({
             return (
               <Field data-invalid={isInvalid}>
                 <FieldLabel htmlFor={field.name}>Rol</FieldLabel>
-                <Input
-                  className={
-                    isInvalid ? 'transition-colors border-red-400' : ''
-                  }
-                  id={field.name}
-                  name={field.name}
-                  value={field.state.value}
-                  onBlur={field.handleBlur}
-                  onChange={(e) => field.handleChange(e.target.value)}
-                  disabled={createRol.isPending}
-                />
+                <div className="relative">
+                  <Input
+                    className={`pr-10 ${isInvalid ? 'transition-colors border-red-400' : ''}`}
+                    id={field.name}
+                    name={field.name}
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    disabled={createRol.isPending}
+                  />
+                  <div className="absolute right-1 top-1/2 -translate-y-1/2">
+                    <HoverCard>
+                      <HoverCardTrigger>
+                        <Button
+                          className="pointer-events-none"
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                        >
+                          <CircleQuestionMark />
+                        </Button>
+                      </HoverCardTrigger>
+                      <HoverCardContent>
+                        <p className="text-xs">
+                          El nombre del rol puede contener letras, acentos y
+                          espacios.
+                        </p>
+                      </HoverCardContent>
+                    </HoverCard>
+                  </div>
+                </div>
               </Field>
             );
           }}
