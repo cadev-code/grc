@@ -15,7 +15,7 @@ export const RolesForm = ({
     rol: z
       .string()
       .min(1)
-      .regex(/^[a-zA-Z]+$/, {
+      .regex(/^[a-z]+$/, {
         message: 'El rol solo puede contener letras',
       }),
     title: z
