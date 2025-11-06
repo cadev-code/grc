@@ -14,7 +14,7 @@ axiosClient.interceptors.request.use((config) => {
   if (config.url?.includes('/download') || config.url?.includes('/export')) {
     config.timeout = 30000; // 30 segundos para descargas
   } else if (config.url?.includes('/auth')) {
-    config.timeout = 5000; // 5 segundos para autenticación
+    config.timeout = 10000; // 10 segundos para autenticación
   } else if (config.method === 'get') {
     config.timeout = 10000; // 10 segundos para GETs normales
   } else if (config.method === 'post' || config.method === 'put') {
