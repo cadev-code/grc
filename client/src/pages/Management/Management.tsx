@@ -11,17 +11,19 @@ import { Rol } from '@/types';
 import { Plus, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { FilterBar, RolesManagement } from './components';
+import { useIsFetching } from '@tanstack/react-query';
 
 export const Management = () => {
-  const { data: rolesData, isLoading: rolesIsLoading } = useRoles();
+  const rolesData = useRoles();
+  const isFetching = useIsFetching();
 
   const [roles, setRoles] = useState<Rol[]>([]);
 
   useEffect(() => {
-    if (!rolesIsLoading && !rolesData?.error) {
-      setRoles(rolesData?.data || []);
+    if (isFetching === 0 && !rolesData?.error) {
+      setRoles(rolesData?.data?.data || []);
     }
-  }, [rolesData, rolesIsLoading]);
+  }, [rolesData, isFetching]);
 
   const [filter, setFilter] = useState({
     search: '',
@@ -78,7 +80,7 @@ export const Management = () => {
                 filter={filter}
                 setFilter={setFilter}
                 roles={roles}
-                isLoading={rolesIsLoading}
+                isLoading={isFetching > 0}
               />
             </div>
           </CardContent>
