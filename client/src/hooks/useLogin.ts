@@ -18,7 +18,6 @@ export const useLogin = () => {
     mutationFn: (body: LoginBody) => poster<User>('/auth/login', body),
     onError: (error) => {
       showAlert(error.response?.data.message, 'error');
-      console.error('Login error:', error.response?.data.error);
     },
     onSuccess: () => {
       navigate('/incidentes');

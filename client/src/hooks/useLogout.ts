@@ -13,9 +13,6 @@ export const useLogout = () => {
     void
   >({
     mutationFn: () => poster('/auth/logout'),
-    onError: (error) => {
-      console.error('Logout error:', error.response?.data.error);
-    },
     onSuccess: () => {
       queryClient.removeQueries({ queryKey: ['currentUser'] });
       navigate('/login');
