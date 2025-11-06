@@ -24,6 +24,8 @@ import {
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
 import { useCurrentUser, useLogout } from '@/hooks';
+import { useIsFetching } from '@tanstack/react-query';
+import { Button } from '../ui/button';
 
 const items = [
   {
@@ -35,6 +37,9 @@ const items = [
 
 export const AppSidebar = () => {
   const { data: user } = useCurrentUser();
+
+  const isFetching = useIsFetching();
+
   const logout = useLogout();
 
   return (
@@ -85,13 +90,17 @@ export const AppSidebar = () => {
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent side="top" align="end">
-                <DropdownMenuItem
-                  className="cursor-pointer transition-colors hover:!bg-red-50"
+                <Button
+                  className="cursor-pointer"
+                  variant="ghost"
                   onClick={() => logout.mutate()}
+                  disabled={isFetching > 0}
                 >
-                  <span>Cerrar Sesión</span>
-                  <LogOut className="text-red-600" />
-                </DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer">
+                    <span>Cerrar Sesión</span>
+                    <LogOut className="text-red-600" />
+                  </DropdownMenuItem>
+                </Button>
               </DropdownMenuContent>
             </DropdownMenu>
           </SidebarMenuItem>
