@@ -8,6 +8,7 @@ import { Spinner } from '@/components/ui/spinner';
 import { HoverCard, HoverCardContent } from '@/components/ui/hover-card';
 import { HoverCardTrigger } from '@radix-ui/react-hover-card';
 import { CircleQuestionMark } from 'lucide-react';
+import { useIsMutating } from '@tanstack/react-query';
 
 export const RolesForm = ({
   setShowForm,
@@ -35,6 +36,7 @@ export const RolesForm = ({
     form.reset();
   };
 
+  const isMutating = useIsMutating();
   const createRol = useCreateRole(closeForm);
 
   const form = useForm({
@@ -160,7 +162,7 @@ export const RolesForm = ({
         >
           Cancelar
         </Button>
-        <Button type="submit" disabled={createRol.isPending}>
+        <Button type="submit" disabled={isMutating > 0}>
           Guardar
         </Button>
       </div>

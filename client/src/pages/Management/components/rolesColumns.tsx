@@ -12,6 +12,7 @@ import {
 type RolesColumnsProps = {
   onEdit: (rol: Rol) => void;
   onDelete: (rol: Rol) => void;
+  isLoading: boolean;
 };
 
 const handleSort = (column: Column<Rol, unknown>) => {
@@ -32,6 +33,7 @@ const handleSort = (column: Column<Rol, unknown>) => {
 export const rolesColumns = ({
   onEdit,
   onDelete,
+  isLoading,
 }: RolesColumnsProps): ColumnDef<Rol>[] => [
   {
     accessorKey: 'rol',
@@ -64,7 +66,12 @@ export const rolesColumns = ({
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button className="cursor-pointer" variant="ghost" size="sm">
+            <Button
+              className="cursor-pointer"
+              variant="ghost"
+              size="sm"
+              disabled={isLoading}
+            >
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>

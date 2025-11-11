@@ -16,9 +16,10 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import { rolesColumns } from './rolesColumns';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useDeleteRol } from '@/hooks/useDeleteRol';
+import { useIsMutating } from '@tanstack/react-query';
 
 export const RolesTable = ({ data }: { data: Rol[] }) => {
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -27,18 +28,22 @@ export const RolesTable = ({ data }: { data: Rol[] }) => {
     pageSize: 4,
   });
 
-  // TODO: agregar loading para deshabilitar boton mientras se elimina
-  const { mutate: deleteRol } = useDeleteRol();
+  const deleteRol = useDeleteRol();
+  const isMutating = useIsMutating();
 
-  const columns = rolesColumns({
-    onEdit: (rol: Rol) => {
-      console.log('Editar rol:', rol);
-    },
-    onDelete: (rol: Rol) => {
-      // TODO: mostrar alerta para confirmar eliminacion
-      deleteRol(rol.id);
-    },
-  });
+  const columns = useMemo(
+    () =>
+      rolesColumns({
+        onEdit: (rol: Rol) => {
+          console.log('Editar rol:', rol);
+        },
+        onDelete: (rol: Rol) => {
+          deleteRol.mutate(rol.id);
+        },
+        isLoading: isMutating > 0,
+      }),
+    [deleteRol, isMutating],
+  );
 
   const table = useReactTable({
     data: data,
